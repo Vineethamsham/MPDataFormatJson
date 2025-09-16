@@ -1,0 +1,7 @@
+
+
+Please find below the required JSON format for Plans, Promotions, and Devices. The structure covers the fields we currently capture (title, sections, content, images), and additional metadata can be added or customized depending on data availability.
+
+For Devices, we also need pricing details, payment options, and public image information. For Promotions and Plans, we require timely updates to reflect recent additions or deletions, ensuring that active/retired statuses are always current.
+
+Thanks]
