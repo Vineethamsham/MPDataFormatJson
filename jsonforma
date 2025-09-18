@@ -1,107 +1,21 @@
-{
-  "plan_id": "P12345",
-  "name": "Unlimited Premium Plan",
-  "eligibility": ["Consumer", "Business", "Employee"],
-  "pricing": {
-    "monthly_cost": 80,
-    "add_ons": [
-      {"feature": "Hotspot 40GB", "cost": 10},
-      {"feature": "International Roaming", "cost": 15}
-    ]
-  },
-  "features": [
-    "Unlimited talk, text, data",
-    "5G access",
-    "Netflix included"
-  ],
-  "status": "active",
-  "valid_from": "2025-01-01",
-  "valid_to": "2025-12-31",
-  "last_updated": "2025-09-16T12:00:00Z",
-  "faqs": [
-    {
-      "question": "Who is eligible?",
-      "business_response": "All consumer and business accounts with up to 12 lines."
-    }
-  ]
-}
+section_text_raw = section.get("content", "")
 
+# Handle list of strings
+if isinstance(section_text_raw, list):
+    try:
+        section_text = "\n".join(str(x) for x in section_text_raw)
+    except Exception as e:
+        print(f"⚠️ Error joining content list in section: {e} — content = {section_text_raw}")
+        continue
 
-Promotion (Sample API Output)
-{
-  "promotion_id": "PR5678",
-  "title": "SyncUP: $2 Tracker Line with New Tracker",
-  "associated_plans": ["P12345"],
-  "associated_devices": ["D67890"],
-  "sections": [
-    {
-      "heading": "Offer Details",
-      "content": [
-        "Get one ON US on a discounted $2/month plan",
-        "Available for T-Mobile for Business (including Business with SSN)"
-      ]
-    },
-    {
-      "heading": "What's the deal?",
-      "content": [
-        "Must purchase on EIP",
-        "Available in Retail, Digital, Costco, etc."
-      ]
-    }
-  ],
-  "images": [
-    "https://s7d1.scene7.com/is/image/TMobileDREProd/TCL_SyncUP_Tracker.jpg"
-  ],
-  "status": "active",
-  "valid_from": "2025-05-01",
-  "valid_to": "2025-09-30",
-  "last_updated": "2025-09-16T12:00:00Z",
-  "faqs": [
-    {
-      "question": "What happens if a customer pays off EIP early?",
-      "business_response": "Customer must maintain the line of service and EIP tie."
-    }
-  ]
-}
+# Handle single string
+elif isinstance(section_text_raw, str):
+    section_text = section_text_raw
 
-Device (Sample API Output)
+# Catch any weird types (e.g., builtin methods!)
+else:
+    print(f"⚠️ Unexpected content type: {type(section_text_raw)} — {section_text_raw}")
+    continue
 
-{
-  "device_id": "D67890",
-  "title": "Tech specs: Google Pixel 6a",
-  "pricing": {
-    "full_retail_price": 449.99,
-    "installment_options": [
-      {"term": "24 months", "monthly_cost": 18.75},
-      {"term": "36 months", "monthly_cost": 12.50}
-    ]
-  },
-  "availability": "in_stock",
-  "specs": {
-    "display": "6.1'' OLED FHD+ HDR",
-    "battery": "4410 mAh",
-    "camera": "3 cameras (1 front, 2 rear)",
-    "os": "Android 12"
-  },
-  "sections": [
-    {
-      "heading": "Key Features",
-      "content": ["4G LTE + 5G", "IP67 dust and water resistance"]
-    },
-    {
-      "heading": "Multimedia",
-      "content": ["Audio support: AAC, MP3", "Video support: H.264, MP4"]
-    }
-  ],
-  "images": [
-    "https://tmobile.com/images/pixel6a_front.jpg",
-    "https://tmobile.com/images/pixel6a_back.jpg"
-  ],
-  "last_updated": "2025-09-16T12:00:00Z",
-  "faqs": [
-    {
-      "question": "Does this support expandable memory?",
-      "business_response": "No, Pixel 6a does not support expandable memory."
-    }
-  ]
-}
+if section_text.strip():
+    all_texts.append(section_text.strip())
