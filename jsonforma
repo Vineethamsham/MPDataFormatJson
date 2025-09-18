@@ -1,21 +1,55 @@
-section_text_raw = section.get("content", "")
+def load_local_active_plans(path: str) -> List[Document]:
+    documents = []
+    idx = 0  # global chunk index
 
-# Handle list of strings
-if isinstance(section_text_raw, list):
-    try:
-        section_text = "\n".join(str(x) for x in section_text_raw)
-    except Exception as e:
-        print(f"⚠️ Error joining content list in section: {e} — content = {section_text_raw}")
-        continue
+    for filename in os.listdir(path)[:10]:
+        if not filename.endswith(".json"):
+            continue
 
-# Handle single string
-elif isinstance(section_text_raw, str):
-    section_text = section_text_raw
+        with open(os.path.join(path, filename), "r", encoding="utf-8") as f:
+            json_data = json.load(f)
 
-# Catch any weird types (e.g., builtin methods!)
-else:
-    print(f"⚠️ Unexpected content type: {type(section_text_raw)} — {section_text_raw}")
-    continue
+        sections = json_data.get("sections", [])
+        all_texts = []
 
-if section_text.strip():
-    all_texts.append(section_text.strip())
+        for section in sections:
+            section_text_list = section.get("content", [])
+
+            if isinstance(section_text_list, list):
+                section_text = "\n".join(str(item) for item in section_text_list if isinstance(item, str))
+            elif isinstance(section_text_list, str):
+                section_text = section_text_list
+            else:
+                continue
+
+            if section_text.strip():
+                all_texts.append(section_text.strip())
+
+        full_text = "\n\n".join(all_texts)
+
+        if full_text.strip():
+            doc = Document(
+                page_content=full_text,
+                metadata={
+                    "plan_id": filename.split(".")[0],
+                    "source_url": json_data.get("url", ""),
+                    "version": "v1",
+                    "category": "plans",
+                }
+            )
+
+            # ✅ Use your old chunker
+            token_len = len(full_text.split())  # or use tiktoken if configured
+            if token_len > 8000:
+                chunks = token_safe_split(doc, chunk_size=8000, chunk_overlap=250)
+            else:
+                chunks = [doc]
+
+            # ✅ Assign chunk_index per document
+            for i, chunk in enumerate(chunks):
+                chunk.metadata["chunk_index"] = i
+                documents.append(chunk)
+
+            idx += 1
+
+    return documents
